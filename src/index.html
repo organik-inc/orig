@@ -69,7 +69,8 @@
     const daoAddress = ''; // In case we need a SC to interact with.
     // This Address is only for Polygon's Mumbai Testnet.
     var walletAddress = '';
-    
+    var chainNetwork = false;
+
     $(document).ready(function () {
         $('#btn-login').hide();
         $('#btn-logout').hide();
@@ -112,7 +113,6 @@
                 .then(function (user) {
                   console.log("logged in user:", user);
                   walletAddress = user.get("ethAddress");
-                  console.log(walletAddress);
                   $('#btn-login').hide();
                   $('#btn-logout').show();
                   $('#launch').show();
@@ -121,7 +121,7 @@
                   console.log(error);
                 });
             }else{
-                console.log("logged in user:", user);
+                console.log("logged in user::", user);
                 walletAddress = user.get("ethAddress");
                 console.log(walletAddress);
                 $('#btn-login').hide();
@@ -146,30 +146,36 @@
 
         async function launchDapp(event) {
           event.preventDefault();
-          const miniAddress = walletAddress.replace(walletAddress.substring(6, 38), '...')
-          console.log("launchDapp");
-          $('.loader-wrap').fadeIn('slow');
-          const balance  = await ethereum.request({ method: 'eth_getBalance' , params: [ walletAddress, 'latest' ]})
-          const network = 0;
-          // // Returns a hex value of Wei
-          const wei = parseInt(balance, 16)
-          const gwei = (wei / Math.pow(10, 9)) // parse to Gwei
-          const eth = (wei / Math.pow(10, 18))// parse to ETH
-          
-          // console.log(wei,gwei,eth, balance)
-          $('.showAccount').show();
-          $('.showAccount').text(`Polygon: ${miniAddress}`);
-          
-          $('#balance').show();
-          $('#balance').text(`BALANCE: ${eth} MATIC`);
-          
-          setTimeout(function () {
-                $('.splash').hide();
-                $('#dapp').show();
-                $('#launch').hide();
-                $('#btn-logout').hide();
-                $('.loader-wrap').fadeOut('slow');
-              }, 999);
+          chainNetwork = ethereum.networkVersion;
+          console.log(chainNetwork);
+          if(chainNetwork !== '80001'){
+              alert('Connect to Polygon Mumbai')
+          }else{
+            const miniAddress = walletAddress.replace(walletAddress.substring(6, 38), '...')
+            console.log("launchDapp");
+            $('.loader-wrap').fadeIn('slow');
+            const balance  = await ethereum.request({ method: 'eth_getBalance' , params: [ walletAddress, 'latest' ]})
+            const network = 0;
+            // // Returns a hex value of Wei
+            const wei = parseInt(balance, 16)
+            const gwei = (wei / Math.pow(10, 9)) // parse to Gwei
+            const eth = (wei / Math.pow(10, 18))// parse to ETH
+            
+            // console.log(wei,gwei,eth, balance)
+            $('.showAccount').show();
+            $('.showAccount').text(`Polygon: ${miniAddress}`);
+            
+            $('#balance').show();
+            $('#balance').text(`BALANCE: ${eth} MATIC`);
+            
+            setTimeout(function () {
+                    $('.splash').hide();
+                    $('#dapp').show();
+                    $('#launch').hide();
+                    $('#btn-logout').hide();
+                    $('.loader-wrap').fadeOut('slow');
+                }, 999);
+          }
         }
 
         async function getProfiles(event) {
