@@ -83,6 +83,27 @@
         
         Moralis.start({ serverUrl, appId });
         
+        ethereum.on('accountsChanged', (accounts) => {
+        console.log(account)
+        // Handle the new accounts, or lack thereof.
+        // "accounts" will always be an array, but it can be empty.
+        window.location.reload();
+        });
+
+        ethereum.on('chainChanged', (chainId) => {
+        const chain = parseInt(chainId.replace("0x","").toString(16), 16)
+        console.log(chainId, chain);
+        if(chain !== 80001){
+            alert('Please connect to Polygon Mumbai Network')
+        }else{
+            window.location.reload();
+        }
+        // Handle the new chain.
+        // Correctly handling chain changes can be complicated.
+        // We recommend reloading the page unless you have good reason not to.
+        // window.location.reload();
+        });
+
         async function login() {
           $('.loader-wrap').fadeIn('slow');
           let user = Moralis.User.current();
@@ -129,6 +150,7 @@
           console.log("launchDapp");
           $('.loader-wrap').fadeIn('slow');
           const balance  = await ethereum.request({ method: 'eth_getBalance' , params: [ walletAddress, 'latest' ]})
+          const network = 0;
           // // Returns a hex value of Wei
           const wei = parseInt(balance, 16)
           const gwei = (wei / Math.pow(10, 9)) // parse to Gwei
