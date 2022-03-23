@@ -1,1 +1,4 @@
 html/js/moralisKeys.js
+dist
+.env
+node_modules
