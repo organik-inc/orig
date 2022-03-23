@@ -67,7 +67,6 @@ fastify.get('/', async function(req, reply){
         }else{
             reply.send({
                 type: "GET",
-                callback: req.query.callback,
                 data: aux,
                 userAgent: req.headers["user-agent"]
             });
