@@ -180,6 +180,14 @@
 
         async function getProfiles(event) {
             console.log('Work in progress')
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(dataWeGotViaJsonp){
+                        console.log(dataWeGotViaJsonp)
+                    }
+            });
         }
         
         document.getElementById("btn-login").onclick = login;
