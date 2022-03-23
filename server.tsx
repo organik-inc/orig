@@ -3,6 +3,11 @@ const fastify = Fastify();
 
 const { exec } = require('child_process');
 
+fastify.register(require('fastify-cors'), { 
+    // I don't even think this works
+    origin: true
+})  
+
 function isJson(str) {
     try {
         JSON.parse(str);
@@ -33,20 +38,40 @@ fastify.get('/', async function(req, reply){
 
         var lines = stdout.split("\n")
         var aux = []
+        var flag = false
         lines.map((line)=>{
             console.log(line)
             if(line !== ''){
-                aux.push( (isJson(line)) ? JSON.parse(line) : line )
+                if(+!!flag){
+                    // aux.push( (isJson(line)) ? JSON.parse(line) : line )
+                    aux = (isJson(line)) ? JSON.parse(line) : line ;
+                    if(isJson(line)){
+                        aux.results = true
+                    }
+                }
+                if(line == '0xRig:result'){
+                    flag = true;
+                }
             }
-            
         })
-
-        reply.send({
-            type: "GET",
-            data: aux,
-            userAgent: req.headers["user-agent"]
-        })
-
+        if(aux.length <= 0){
+            aux = {results:false}
+        }
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                callback: req.query.callback,
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            });
+        }
       });
       
       ls.on('exit', function (code) {

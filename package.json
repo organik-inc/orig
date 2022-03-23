@@ -65,6 +65,7 @@
     "cross-fetch": "^3.1.5",
     "ethers": "^5.5.4",
     "fastify": "^3.27.4",
+    "fastify-cors": "^6.0.3",
     "fastify-formbody": "^5.2.0",
     "graphql": "^16.3.0",
     "ipfs-http-client": "^56.0.1",
@@ -76,6 +77,6 @@
     "@types/uuid": "^8.3.4",
     "env-cmd": "^10.1.0",
     "ts-node": "^10.7.0"
-  }
+  },
   "homepage": "https://github.com/organik-inc/orig#readme"
 }

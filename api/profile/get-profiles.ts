@@ -116,7 +116,11 @@ export const profiles = async (request?: ProfilesRequest) => {
   // above you can query many
   const profilesFromProfileIds = await getProfilesRequest(request);
 
-  prettyJSON('profiles: result', profilesFromProfileIds.data);
+  // console.log(JSON.parse(profilesFromProfileIds.data))
+  console.log('0xRig:result')
+  var result = JSON.stringify(profilesFromProfileIds.data)
+  console.log(result)
+  // prettyJSON('', profilesFromProfileIds.data);
 
   return profilesFromProfileIds.data;
 };
