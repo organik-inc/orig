@@ -44,7 +44,7 @@ export const createProfile = async () => {
   });
 
   prettyJSON('create profile: result', createProfileResult.data);
-
+  
   console.log('create profile: poll until indexed');
   const result = await pollUntilIndexed(createProfileResult.data.createProfile.txHash);
 

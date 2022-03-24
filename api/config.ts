@@ -21,6 +21,8 @@ export const argsBespokeInit = () => {
 
 export const PK = getParamOrExit('PK');
 
+export const W = getParam('W');
+
 export const MUMBAI_RPC_URL = getParamOrExit('MUMBAI_RPC_URL');
 
 export const LENS_API = getParamOrExit('LENS_API');

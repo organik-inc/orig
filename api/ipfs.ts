@@ -1,11 +1,25 @@
 import { create } from 'ipfs-http-client';
 import { v4 as uuidv4 } from 'uuid';
+import { W } from './config';
 
 const client = create({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https',
 });
+
+export const metadataId = async () => {
+  return uuidv4()
+};
+
+export const uploadIpfsFromW = async () => {
+  var w = JSON.parse(W!);
+  const result = await client.add(
+    JSON.stringify(w)
+  );
+  console.log('upload result ipfs', result);
+  return result;
+};
 
 export const uploadIpfs = async () => {
   const result = await client.add(

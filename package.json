@@ -5,6 +5,12 @@
   "main": "server.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "0xrig:get-account": "env-cmd -f .env ts-node ./0xrig/env/get-account",
+    "0xrig:create-profile": "env-cmd -f .env ts-node ./0xrig/profile/create",
+    "0xrig:get-profile": "env-cmd -f .env ts-node ./0xrig/profile/get --init",
+    "0xrig:post-registration": "env-cmd -f .env ts-node ./0xrig/post/registration",
+    "0xrig:get-publications": "env-cmd -f .env ts-node ./0xrig/publications/get-posts",
+    "0xrig:get-post": "env-cmd -f .env ts-node ./0xrig/publications/get-post",
     "authentication:login": "env-cmd -f .env ts-node ./api/authentication/login --init",
     "authentication:refresh": "env-cmd -f .env ts-node ./api/authentication/refresh",
     "authentication:verify": "env-cmd -f .env ts-node ./api/authentication/verify",

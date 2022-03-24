@@ -1,6 +1,13 @@
 // @ts-ignore
 import omitDeep from 'omit-deep';
 
+export const rig0x = (message: string, obj: object) => {
+  console.log(message)
+  var result = JSON.stringify(obj)
+  console.log(result)
+  // console.log(message, JSON.stringify(obj, null, 2));
+};
+
 export const prettyJSON = (message: string, obj: string) => {
   console.log(message, JSON.stringify(obj, null, 2));
 };

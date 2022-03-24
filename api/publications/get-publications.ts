@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client/core';
 import { apolloClient } from '../apollo-client';
 import { PROFILE_ID } from '../config';
-import { prettyJSON } from '../helpers';
+import { prettyJSON, rig0x } from '../helpers';
 
 const GET_PUBLICATIONS = `
   query($request: PublicationsQueryRequest!) {
@@ -316,7 +316,8 @@ export const getPublications = async () => {
     profileId,
     publicationTypes: ['POST', 'COMMENT', 'MIRROR'],
   });
-  prettyJSON('publications: result', result.data);
+  rig0x('0xRig:result', result.data);
+  // prettyJSON('publications: result', result.data);
 
   return result.data;
 };

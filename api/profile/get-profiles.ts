@@ -3,7 +3,7 @@ import { apolloClient } from '../apollo-client';
 import { login } from '../authentication/login';
 import { argsBespokeInit } from '../config';
 import { getAddressFromSigner } from '../ethers.service';
-import { prettyJSON } from '../helpers';
+import { rig0x, prettyJSON } from '../helpers';
 
 const GET_PROFILES = `
   query($request: ProfileQueryRequest!) {
@@ -117,9 +117,8 @@ export const profiles = async (request?: ProfilesRequest) => {
   const profilesFromProfileIds = await getProfilesRequest(request);
 
   // console.log(JSON.parse(profilesFromProfileIds.data))
-  console.log('0xRig:result')
-  var result = JSON.stringify(profilesFromProfileIds.data)
-  console.log(result)
+  // console.log(result)
+  rig0x('0xRig:result', profilesFromProfileIds.data);
   // prettyJSON('', profilesFromProfileIds.data);
 
   return profilesFromProfileIds.data;
