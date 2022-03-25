@@ -1,10 +1,12 @@
 {
   "name": "0xrig",
   "version": "1.0.0",
-  "description": "Crypto Phone",
+  "description": "Crypto Rig",
   "main": "server.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "html": "python -m http.server 8000",
+    "server": "node server.tsx",
     "0xrig:get-account": "env-cmd -f .env ts-node ./0xrig/env/get-account",
     "0xrig:create-profile": "env-cmd -f .env ts-node ./0xrig/profile/create",
     "0xrig:get-profile": "env-cmd -f .env ts-node ./0xrig/profile/get --init",

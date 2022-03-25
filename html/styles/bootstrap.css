@@ -4,10 +4,15 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
- /*! * Bootstrap v5.0.1 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) */
+ /*! * Bootstrap v5.0.1 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) */ 
+ @keyframes myRadius {
+    from {border-radius: 5px;}
+    to {border-radius: 0px;}
+  }
+
  @keyframes mymove {
-    from {background-color: #0238c7;}
-    to {background-color: #092a83;}
+    from {background-color: #4169e0ff;}
+    to {background-color: #4169e0dd;}
   }
  :root{
      --bs-blue:#0d6efd;
@@ -53,6 +58,14 @@
      background-color:#fff;
      -webkit-text-size-adjust:100%;
      -webkit-tap-highlight-color:transparent
+ }
+ .toggleWarp, image{
+    position: relative;
+    pointer-events: none;
+    bottom: -100px;
+    left: 50%;
+    width: 110px;
+    animation: myRadius 2s infinite alternate;
  }
  hr{
      margin:1rem 0;
@@ -9052,7 +9065,7 @@
      overflow-y:auto
  }
  .dark-bg{
-     background:#0238c7 url("./bg.png") repeat-x top left;
+     /* background:#0238c7 url("../img/bg.png") repeat-x top left; */
      color:#fff;
      animation: mymove 2s infinite alternate;
  }
@@ -9143,7 +9156,7 @@
  }
  @media screen and (max-width: 640px){
      .dark-bg{
-          background:#0238c7 url("./bg.png") repeat-x top left;
+          /* background:#0238c7 url("../img/bg.png") repeat-x top left; */
           color:#fff;
           animation: mymove 2s infinite alternate;
       }

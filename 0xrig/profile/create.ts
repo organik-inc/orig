@@ -41,7 +41,8 @@ export const createProfile = async () => {
 
   await login(address);
   const createProfileResult = await createProfileRequest({
-    handle: `${handle}`
+    handle: `${handle}`,
+    profilePictureUri: `https://bafybeifjth5xqdi3a2ocj75732rsjfd3lred2yf3gqfxt3dc6mis7sxuu4.ipfs.dweb.link/0xRig-Logo.png`
   });
 
   prettyJSON('create profile: result', createProfileResult.data);
