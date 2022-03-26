@@ -4,10 +4,10 @@
     
 <head>
     <title>oRig DAO</title>
-    <link href="bootstrap.css" rel="stylesheet" id="style">
+    <link href="styles/dapp.css" rel="stylesheet" id="style">
 </head>
 
-<body class="body-scroll d-flex flex-column h-100 dark-bg" data-page="dapp" onload="">
+<body class="body-scroll d-flex flex-column h-100 dark-bg warp" data-page="dapp" onload="">
 
 <div class="container-fluid loader-wrap">
     <div class="row h-100">
@@ -25,198 +25,480 @@
 
 <main class="container-fluid h-100">
     <div class="row h-100 splash">
-        <div class="col-10 col-md-6 col-lg-5 col-xl-3 mx-auto mt-auto text-center mb-100px d-grid gap-2">
-            <h3 id="text" class="mb-1 splash">Welcome to</h3>
-            <p class="text-muted mb-4 splash"><small>ORIG DAO</small></p>
+        
+        <div class="section wallet-card-section pt-4">
+            <div class="wallet-card">
+                <!-- Balance -->
+                <div class="balance">
+                    <div class="left">
+                        <span class="title">Welcome to</span>
+                        <h1 class="total">0xRig</h1>
+                    </div>
+                    <div class="right">
+                        <a href="#" target="_self" id="btn-login" class="btn btn-lg btn-default btn-block shadow-sm MetaMaskConnect" style="">
+                        <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:35px;">
+                        Connect</a>
+
+                        <a href="./" id="launch" class="btn btn-lg btn-default btn-block shadow-sm">ENTER</a>
             
-            <a href="#" target="_self" id="btn-login" class="btn btn-lg btn-default btn-block shadow-sm MetaMaskConnect">
-                <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:35px;" />
-                Connect</a>
+                        <a href="#" target="_self" id="btn-logout" class="btn btn-lg btn-default btn-block shadow-sm MetaMaskConnect" style="background-color: #fb73dd;">
+                        <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:35px;" />
+                        Disconnect</a>
+
+                    </div>
+                </div>
+                <!-- * Balance -->
+                <div class="section mt-2 pb-4 setupRig">
+                    <figure>
+                        <img src="img/setup-rig.png" alt="image" class="imaged img-fluid">
+                    </figure>
+                    <h1>
+                        Let's get your rig ready!
+                    </h1>
+                    <div class="lead">
+                        Already completed this steps? Click on ENTER to continue.
+                    </div>
+                </div>
+                <div class="section mt-2 pb-4 landingPage">
+                    <figure>
+                        <img src="img/call-your-friends.png" alt="image" class="imaged img-fluid">
+                    </figure>
+                    <h1>
+                        Built on LENS Protocol
+                    </h1>
+                    <div class="blog-header-info mt-2 mb-2">
+                        <div>
+                            <img src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" alt="img" class="imaged w24 rounded mr-05">
+                            by <a href="https://lens.dev/?from=0xrig.com" target="_blank">LENS.dev</a>
+                        </div>
+                    </div>
+                    <div class="lead">
+                        Create an Account and call your friends for free. Inspired by the LENS Protocol.
+                    </div>
+                </div>
+                <!-- Wallet Footer -->
+                <div class="wallet-footer">
+                    <div class="item">
+                        <a href="#" data-toggle="modal" data-target="#withdrawActionSheet">
+                            <div class="icon-wrapper" style="background:#293759 !important">
+                                <img alt="0xRigLogo" src="https://bafybeifjth5xqdi3a2ocj75732rsjfd3lred2yf3gqfxt3dc6mis7sxuu4.ipfs.dweb.link/0xRig-Logo.png" class="" style="max-width:35px;border-radius: 20px;">
+                            </div>
+                            <strong>About</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="app-cards.html">
+                            <div class="icon-wrapper bg-danger">
+                                <ion-icon name="logo-youtube" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
+                            </div>
+                            <strong>Tutorials</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#" data-toggle="modal" data-target="#exchangeActionSheet">
+                            <div class="icon-wrapper bg-warning">
+                                <ion-icon name="logo-bitcoin" role="img" class="md hydrated" aria-label="swap vertical"></ion-icon>
+                            </div>
+                            <strong>Contribute</strong>
+                        </a>
+                    </div>
+
+                </div>
+                <!-- * Wallet Footer -->
+            </div>
+        </div>
+        
+        <div class="col-10 col-md-6 col-lg-5 col-xl-3 mx-auto mt-auto text-center mb-100px d-grid gap-2">
                 
             <a href="#" target="_self" id="InstallMetaMask" class="btn btn-lg btn-default btn-block shadow-sm InstallMetaMask">
             <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:35px;" />
             Install</a>
-            <a href="./" id="launch" class="btn btn-lg btn-default btn-block shadow-sm">ENTER</a>
             
-            <a href="#" target="_self" id="btn-logout" class="btn btn-lg btn-default btn-block shadow-sm MetaMaskConnect" style="background-color: #fb73dd;">
-            <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:35px;" />
-            Disconnect</a>
-            
-            <a href="#" target="_self" class="text-white btn btn-lg btn-link splash">Terms of Service</a>
+            <a href="#" target="_self" class="text-white btn btn-lg splash">Terms of Service</a>
             
         </div>
     </div>
     
     <div id="dapp" class="row h-100">
-        <div class="col-10 col-md-6 col-lg-5 col-xl-3 mx-auto mt-auto text-center mb-100px d-grid gap-2">
-            
-            <p id="showAccount" class="text-muted mb-2 showAccount"><small>ORIG DAO</small></p>
-            <p id="balance" class="text-muted mb-4"><small>ORIG DAO</small></p>
+        
+        <div class="section wallet-card-section pt-4 pb-4">
+            <div class="wallet-card">
 
-            <p id="slogan" class="text-muted mb-4"><small>ORIG DAO</small></p>
-            <a href="#" id="getProfiles" class="btn btn-lg btn-default btn-block shadow-sm">LOGIN WITH LENS</a>
-            <a href="#" target="_self" class="text-white btn btn-lg btn-link">Join Discord</a>
+                <div class="balance">
+                    <div class="left">
+                        <span id="balance" class="title">Balance</span>
+                        <h1 class="total">0xRig</h1>
+                    </div>
+                    <div class="right">
+                        <a href="./" id="exit" class="btn btn-lg btn-default btn-block shadow-sm">EXIT</a>
+                    </div>
+                </div>
+
+                <div id="sectionDashboard" class="section full">
+                    <ul class="listview image-listview flush">
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="lensProfile" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-primary">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>LENS PROFILE</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="myFollowers" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-dark">
+                                    <img alt="LivePeerLogo" src="img/livepeer.png" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>PHONE BOOK</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="0xPhone" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-dark" style="background: black;">
+                                    <img alt="MetaMaskLogo" src="./img/metamask-fox-logo.svg" class="" style="max-width:25px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>WALLET</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="dappSettings" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-primary">
+                                    <img alt="0xRigLogo" src="https://bafybeifjth5xqdi3a2ocj75732rsjfd3lred2yf3gqfxt3dc6mis7sxuu4.ipfs.dweb.link/0xRig-Logo.png" class="" style="max-width:30px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>SETTINGS</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+        
+                </div>
+
+                <div id="sectionSelectProfile" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Choose a Profile</h1>
+                        <h4>The DAPP will be refreshed afterwards</h4>
+                    </div>
+                    <div class="section mb-5 p-2">
+                            <div class="form-group basic">
+                                <ul id="selectProfileUL" class="listview image-listview flush">
+                                    
+                                </ul>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <div id="selectLoader" class="spinner-grow text-success" style="display:none;" role="status"></div>
+                                <a href="/" id="goBackFromSelectProfile">Back to LENS Module</a>
+                            </div>
+                    </div>
+                </div>
+                
+                <div id="sectionSearchProfile" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Search on LENS</h1>
+                        <h4>By Address, Handle or ID</h4>
+                    </div>
+                    <div class="section mb-1 p-2">
+                        <form action="/">
+                            <div class="form-group basic">
+                                <input style="width:50% !important;letter-spacing:0px !important;color:#4970e1 !important" type="text" class="form-control verification-input" id="searchInput" placeholder="" maxlength="99">
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <div id="searchLoader" class="spinner-grow text-success" style="display:none;" role="status"></div>
+                                <button id="searchProfileBtn" type="submit" class="btn btn-primary btn-block btn-lg">Search</button>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <a href="/" id="goBackFromSearchProfile">Back to LENS Module</a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="section mb-2 p-2">
+                        <div class="form-group basic">
+                            <ul id="searchProfileUL" class="listview image-listview flush">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sectionNewProfile" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Enter @username</h1>
+                        <h4>Separate by commas for bulk action</h4>
+                    </div>
+                    <div class="section mb-5 p-2">
+                        <form action="/">
+                            <div class="form-group basic">
+                                <input style="width:50% !important;letter-spacing:0px !important;color:#4970e1 !important" type="text" class="form-control verification-input" id="newHandle" placeholder="" maxlength="99">
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <div id="createLoader" class="spinner-grow text-success" style="display:none;" role="status"></div>
+                                <button id="createProfileBtn" type="submit" class="btn btn-primary btn-block btn-lg">Create</button>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <a href="/" id="goBackFromNewProfile">Back to LENS Module</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="sectionProfile" class="section full" style="display: none;">
+                    <div id="sectionLensProfile" style="display: none;">
+                        <div class="section mt-3 text-center">
+                            <div class="avatar-section">
+                                <a href="#" id="updateProfile">
+                                    <img id="previewAvatar" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" alt="avatar" class="imaged w100 rounded">
+                                    <span class="button">
+                                        <ion-icon name="create"></ion-icon>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                        <ul class="listview simple-listview no-space mt-3 mb-3">
+                            <li>
+                                <span>Profile ID</span>
+                                <strong id="previewID">0x00</strong>
+                            </li>
+                            <li>
+                                <span>Name</span>
+                                <strong id="previewName">?</strong>
+                            </li>
+                            <li>
+                                <span>Bio</span>
+                                <strong id="previewBio">-</strong>
+                            </li>
+                            <li>
+                                <span>Handle</span>
+                                <strong id="previewHandle">@username</strong>
+                            </li>
+                            <li>
+                                <span>Website</span>
+                                <strong id="previewWeb">Not Available</strong>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="listview image-listview flush">
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="newProfile" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-primary">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>CREATE NEW PROFILE</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="selectProfile" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-dark">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>SELECT ANOTHER PROFILE</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="searchLENS" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-primary">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>SEARCH &amp; FOLLOW</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="following" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-dark" style="background: black;">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>FOLLOWING</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="followers" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-dark" style="background: black;">
+                                    <img alt="LENSLogo" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256" class="" style="max-width:35px;border-radius: 20px;">
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>FOLLOWERS</strong></div>
+                                    </div>
+                                    <span class="badge badge-primary badge-empty"></span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+        
+                    <ul class="listview image-listview flush">
+                        <li class="active" style="padding: 5px 0;">
+                            <a id="goBack2Dashboard" href="#" class="item" style="border-radius: 15px;">
+                                <div class="icon-box bg-primary">
+                                    <ion-icon name="arrow-back" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
+                                </div>
+                                <div class="in">
+                                    <div>
+                                        <div class="mb-05"><strong>GO BACK</strong></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- Wallet Footer -->
+                <div class="wallet-footer mt-2">
+                    <div class="item">
+                        <a href="#" data-toggle="modal" data-target="#withdrawActionSheet">
+                            <div class="icon-wrapper" style="background:#293759 !important">
+                                <img alt="0xRigLogo" src="https://bafybeifjth5xqdi3a2ocj75732rsjfd3lred2yf3gqfxt3dc6mis7sxuu4.ipfs.dweb.link/0xRig-Logo.png" class="" style="max-width:35px;border-radius: 20px;">
+                            </div>
+                            <strong>About</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="app-cards.html">
+                            <div class="icon-wrapper bg-danger">
+                                <ion-icon name="logo-youtube" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
+                            </div>
+                            <strong>Tutorials</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#" data-toggle="modal" data-target="#exchangeActionSheet">
+                            <div class="icon-wrapper bg-warning">
+                                <ion-icon name="logo-bitcoin" role="img" class="md hydrated" aria-label="swap vertical"></ion-icon>
+                            </div>
+                            <strong>Contribute</strong>
+                        </a>
+                    </div>
+
+                </div>
+                <!-- * Wallet Footer -->
+            </div>
         </div>
+        
     </div>
 
 </main>
 
+<div class="modal fade dialogbox show" id="previewProfileModal" data-backdrop="static" tabindex="-1" role="dialog" aria-modal="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="pt-3 text-center">
+                <img id="previewModalImage" class="imaged w64 rounded mb-1" alt="image" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256">
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title previewModalName">
+                    -
+                </h5>
+            </div>
+            <div class="modal-body previewModalText" style="color:#958d9e;">
+                -
+            </div>
+            <div class="modal-footer">
+                <div class="btn-inline">
+                    <a href="#" class="btn btn-text-secondary" data-dismiss="modal">CANCEL</a>
+                    <a href="#" id="confirmFollow" class="btn btn-text-primary">FOLLOW</a>
+                    <input type="hidden" value="0" id="followID"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <p id="networkRed">
+        Setup your .env file
+        <span class="badge badge-danger badge-empty"></span></p>
+    <p id="networkYellow">
+        0xrig inactive
+        <span class="badge badge-warning badge-empty"></span></p>
+    <p id="networkGreen">
+        0xrig online
+        <span class="badge badge-success badge-empty"></span></p>
+    <small id="showProfile" class="title showProfile text-center">Welcome to 0xrig.com</small>
+    <br/>
+    <small id="showAccount" class="title showAccount text-center" style="color:black;">\^*^/</small>
+</div>
+<div id="toast-success" class="toast-box toast-bottom bg-success">
+    <div class="in">
+        <div class="text toastMessage">
+            Toast Message
+        </div>
+    </div>
+</div>
+<div id="toast-warning" class="toast-box toast-bottom bg-warning">
+    <div class="in">
+        <div class="text toastMessage" style="color:black;">
+            Toast Message
+        </div>
+    </div>
+</div>
+<div id="toast-danger" class="toast-box toast-bottom bg-danger">
+    <div class="in">
+        <div class="text toastMessage">
+            Toast Message
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/moralis@1.5.5/dist/moralis.js"></script>
 <script src="js/moralisKeys.js"></script>
-<script>
-    'use strict'
-    const daoAddress = ''; // In case we need a SC to interact with.
-    // This Address is only for Polygon's Mumbai Testnet.
-    var walletAddress = '';
-    var chainNetwork = false;
-
-    $(document).ready(function () {
-        $('#btn-login').hide();
-        $('#btn-logout').hide();
-        $('#launch').hide();
-        $('#InstallMetaMask').hide();
-        $('#dapp').hide();
-        
-        // Edit the file "js/moralisKeys.js" with your own Moralis App Keys (https://moralis.io)
-        const serverUrl = moralisKeys.serverUrl;
-        const appId =  moralisKeys.appId;
-        
-        Moralis.start({ serverUrl, appId });
-        
-        ethereum.on('accountsChanged', (accounts) => {
-        console.log(account)
-        // Handle the new accounts, or lack thereof.
-        // "accounts" will always be an array, but it can be empty.
-        window.location.reload();
-        });
-
-        ethereum.on('chainChanged', (chainId) => {
-        const chain = parseInt(chainId.replace("0x","").toString(16), 16)
-        console.log(chainId, chain);
-        if(chain !== 80001){
-            alert('Please connect to Polygon Mumbai Network')
-        }else{
-            window.location.reload();
-        }
-        // Handle the new chain.
-        // Correctly handling chain changes can be complicated.
-        // We recommend reloading the page unless you have good reason not to.
-        // window.location.reload();
-        });
-
-        async function login() {
-          $('.loader-wrap').fadeIn('slow');
-          let user = Moralis.User.current();
-            if (!user) {
-              user = await Moralis.authenticate({ signingMessage: "oRig DAO is requesting your signature to approve login authorization!\n\nYou will NOT be charged for this interaction." })
-                .then(function (user) {
-                  console.log("logged in user:", user);
-                  walletAddress = user.get("ethAddress");
-                  $('#btn-login').hide();
-                  $('#btn-logout').show();
-                  $('#launch').show();
-                })
-                .catch(function (error) {
-                  console.log(error);
-                });
-            }else{
-                console.log("logged in user::", user);
-                walletAddress = user.get("ethAddress");
-                console.log(walletAddress);
-                $('#btn-login').hide();
-                $('#btn-logout').show();
-            }
-            setTimeout(function () {
-                $('.loader-wrap').fadeOut('slow');
-            }, 999);
-        }
-        
-        async function logOut() {
-            $('.loader-wrap').fadeIn('slow');
-            await Moralis.User.logOut();
-            setTimeout(function () {
-                  console.log("logged out");
-                  $('#btn-login').show();
-                  $('#btn-logout').hide();
-                  $('#launch').hide();
-                  $('.loader-wrap').fadeOut('slow');
-            }, 999);
-        }
-
-        async function launchDapp(event) {
-          event.preventDefault();
-          chainNetwork = ethereum.networkVersion;
-          console.log(chainNetwork);
-          if(chainNetwork !== '80001'){
-              alert('Connect to Polygon Mumbai')
-          }else{
-            const miniAddress = walletAddress.replace(walletAddress.substring(6, 38), '...')
-            console.log("launchDapp");
-            $('.loader-wrap').fadeIn('slow');
-            const balance  = await ethereum.request({ method: 'eth_getBalance' , params: [ walletAddress, 'latest' ]})
-            const network = 0;
-            // // Returns a hex value of Wei
-            const wei = parseInt(balance, 16)
-            const gwei = (wei / Math.pow(10, 9)) // parse to Gwei
-            const eth = (wei / Math.pow(10, 18))// parse to ETH
-            
-            // console.log(wei,gwei,eth, balance)
-            $('.showAccount').show();
-            $('.showAccount').text(`Polygon: ${miniAddress}`);
-            
-            $('#balance').show();
-            $('#balance').text(`BALANCE: ${eth} MATIC`);
-            
-            setTimeout(function () {
-                    $('.splash').hide();
-                    $('#dapp').show();
-                    $('#launch').hide();
-                    $('#btn-logout').hide();
-                    $('.loader-wrap').fadeOut('slow');
-                }, 999);
-          }
-        }
-
-        async function getProfiles(event) {
-            console.log('Work in progress')
-            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/`
-            $.ajax({
-                    url: url,
-                    dataType: 'jsonp',
-                    success: function(dataWeGotViaJsonp){
-                        console.log(dataWeGotViaJsonp)
-                    }
-            });
-        }
-        
-        document.getElementById("btn-login").onclick = login;
-        document.getElementById("btn-logout").onclick = logOut;
-        document.getElementById("launch").onclick = launchDapp;
-        document.getElementById("getProfiles").onclick = getProfiles;
-
-        let user = Moralis.User.current();
-          if (!user) {
-              console.log('not logged in')
-              $('#btn-login').show();
-              $('#btn-logout').hide();
-          }else{
-              $('.loader-wrap').fadeIn('slow');
-              walletAddress = user.get("ethAddress");
-              console.log(walletAddress);
-              setTimeout(function () {
-                    console.log('Logged in', user)
-                    $('#launch').show();
-                    $('#btn-logout').show();
-              }, 999);
-          }
-        
-    })
-</script>
+<!-- WarpDrive-->
+<script src="js/lib/jquery.warpdrive.js"></script>
+<!-- Bootstrap-->
+<script src="js/lib/popper.min.js"></script>
+<script src="js/lib/bootstrap.min.js"></script>
+<!-- Ionicons -->
+<script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+<!-- Owl Carousel -->
+<script src="js/lib/owl.carousel.min.js"></script>
+<!-- dAPP Js File -->
+<script src="js/dapp.js"></script>
 <script>
     'use strict'
     $(document).ready(function () {
         
+        $( '.warp' ).warpDrive({
+            starSpeed: 20,/*stars moving speed*/
+            starSpeedMax: 15,/*stars moving speed max*/
+        });
+
         var body = $('body');
         var bodyParent = $('html');
     
@@ -334,8 +616,6 @@
     });
     
     $(window).on('scroll', function () {
-    
-    
         /* scroll from top and add class */
         if ($(document).scrollTop() > '10') {
             $('.header').addClass('active');
@@ -364,7 +644,8 @@
         switch (body.attr('data-page')) {
             
             case "dapp":
-                console.log("Welcome to oRig DAO")	
+                console.log("Welcome to 0xrig DAO");
+                window.scrollTo(0, 0);
             break;
         }
     

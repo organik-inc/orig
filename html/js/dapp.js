@@ -17,7 +17,11 @@
     }
 
     const cleanHandle = (handle = string) => {
-        return handle.replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(" ", "-")
+        return handle.replace(/[^a-zA-Z0-9. ]/g, '').trim().replace(" ", ".")
+    }
+
+    const decodeMethod = (method=string) => {
+        return (method == 'id') ? 'Profile ID' : method == 'handle' ? 'Username Handle' : 'Address Owner';
     }
 
     const updateProfile = (event, profile = string) =>{
@@ -50,13 +54,38 @@
         return false;
     }
 
+    const updateSearchProfiles = (profiles=object, method=string) => {
+        console.log('Updating profiles list',profiles);
+        var list = document.querySelector("#searchProfileUL");
+        profiles.map((profile)=>{
+            var liContent = `<a id="select-${profile.id}" href="#" class="item" style="border-radius: 15px;" onclick="previewProfile(event, {id:'${profile.id}',avatar:'${ (profile.picture !== null && profile.picture !== 'null') ? profile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}',name:'${profile.name}',handle:'${profile.handle}' } )">
+            <div class="icon-box bg-primary">
+                <img alt="LENSLogo" src="${ (profile.picture !== null && profile.picture !== 'null') ? profile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
+            </div>
+            <div class="in">
+                <div>
+                    <div class="mb-05"><strong>@${profile.handle} (${profile.id})</strong></div>
+                    <div class="mb-05"><small>Matched as ${decodeMethod(method)}</small></div>
+                    <div class="mb-05"><small>${profile.stats.totalFollowers} Followers</small></div>
+                    <div class="mb-06"><small>${profile.stats.totalFollowing} Following</small></div>
+                </div>
+            </div>
+        </a>`
+            var entry = document.createElement("li");
+            entry.className = 'active'
+            entry.setAttribute("style", `padding: 5px 0;`);
+            entry.insertAdjacentHTML("beforeend", `${liContent}`);
+            list.appendChild(entry);
+        })
+    }
+
     const updateSelectProfiles = (profiles=object) => {
         console.log('Updating profiles list',profiles);
         var list = document.querySelector("#selectProfileUL");
         profiles.map((profile)=>{
             var liContent = `<a id="select-${profile.id}" href="#" class="item" style="border-radius: 15px;" onclick="updateProfile(event, '${profile.id}')">
             <div class="icon-box bg-primary">
-                <img alt="LENSLogo" src="${profile.picture !== null ? profile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
+                <img alt="LENSLogo" src="${ (profile.picture !== null && profile.picture !== 'null') ? profile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
             </div>
             <div class="in">
                 <div>
@@ -72,20 +101,31 @@
         })
     }
 
+    const previewProfile = (event, profile = object) => {
+        event.preventDefault()
+        console.log('Preview profile:', profile.id)
+        $('#followID').val(profile.id);
+        $('#previewModalImage').attr("src", profile.avatar);
+        $('.previewModalName').html(`${profile.id} - @${profile.handle}`);
+        $('.previewModalText').html(`Do you want to follow ${ (profile.name !== null && profile.name !== 'null') ? profile.name : profile.handle }?`);
+        $('#previewProfileModal').modal('show');
+        return false
+    }
+
     const updateProfileInfo = (profile = object) => {
         console.log('Updating profile:', profile)
         
         $('#previewID').html(profile.id)
         $('#previewHandle').html(`@${profile.handle}`)
         
-        if(profile.picture !== null){
+        if(profile.picture !== null && profile.picture !== 'null'){
             $('#previewAvatar').attr("src", profile.picture.original.url);
         }
-        if(profile.name !== null){
-            $('#previewName').src(profile.name)
+        if(profile.name !== null && profile.name !== 'null'){
+            $('#previewName').html(profile.name)
         }
-        if(profile.website !== null){
-            $('#previewWeb').src(profile.website)
+        if(profile.website !== null && profile.website !== 'null'){
+            $('#previewWeb').html(profile.website)
         }
         
         return true
@@ -455,6 +495,108 @@
             return false;
         }
 
+        async function searchProfileSubmit(event){
+            event.preventDefault();
+            $('#searchLoader').show();
+            $('#searchProfileBtn, #goBackFromSearchProfile').hide();
+            var searchInput = cleanHandle($('#searchInput').val());
+            if(searchInput !== ''){
+                const methods = isHex(searchInput) ? ['handle','owner','id'] : ['handle'];
+                if(isHex(searchInput)){
+                    $('.toastMessage').html(`Performing a wide search. This could take a moment. "${searchInput}"`)
+                    toastbox('toast-success', 3999)
+                }else{
+                    $('.toastMessage').html(`Searching for a handle: @"${searchInput}"`)
+                    toastbox('toast-success', 3999)
+                }
+                setTimeout(()=>{
+                    methods.map((method, index)=>{
+                        setTimeout(()=>{
+                            console.log(`API Search Profile: ${searchInput}. Method:`, method);
+                            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/getProfile?id=${cleanHandle(searchInput)}&method=${method}`
+                            $.ajax({
+                                    url: url,
+                                    dataType: 'jsonp',
+                                    success: function(results){
+                                        console.log(results)
+                                        if(+!!results.data.results){
+                                            // Search completed.
+                                            if(results.data.profiles.pageInfo.totalCount >= 1){
+                                                $('.toastMessage').html(`Found: ${results.data.profiles.pageInfo.totalCount} result${(results.data.profiles.pageInfo.totalCount>=2)?'s':''}. Method ${methods[index]}.`)
+                                                toastbox('toast-success', 2999)
+                                                // append LI
+                                                updateSearchProfiles(results.data.profiles.items, methods[index])
+                                            }else{
+                                                $('.toastMessage').html(`No Results for method: ${methods[index]}`)
+                                                toastbox('toast-warning', 2999)
+                                            }
+                                            if(index >= methods.length-1){
+                                                console.log('Request Completed')
+                                                setTimeout(()=>{
+                                                    $('#searchProfileBtn, #goBackFromSearchProfile').show();
+                                                    $('#searchLoader').hide();
+                                                }, 999)
+                                            }
+                                        }else{
+                                            // Try Again. API sometimes glitches.
+                                            console.log('API timeout, retrying in 2 seconds ...')
+                                            setTimeout(()=>{
+                                                $.ajax({
+                                                    url: url,
+                                                    dataType: 'jsonp',
+                                                    success: function(results){
+                                                        console.log(results)
+                                                        if(+!!results.data.results){
+                                                            // Search completed.
+                                                            if(results.data.profiles.pageInfo.totalCount >= 1){
+                                                                $('.toastMessage').html(`Found: ${results.data.profiles.pageInfo.totalCount} result${(results.data.profiles.pageInfo.totalCount>=2)?'s':''}. Method ${methods[index]}.`)
+                                                                toastbox('toast-success', 2999)
+                                                                // append LI
+                                                                updateSearchProfiles(results.data.profiles.items, methods[index])
+                                                            }else{
+                                                                $('.toastMessage').html(`No Results for method: ${methods[index]}`)
+                                                                toastbox('toast-warning', 2999)
+                                                            }
+                                                            if(index >= methods.length-1){
+                                                                console.log('Request Completed')
+                                                                setTimeout(()=>{
+                                                                    $('#searchProfileBtn, #goBackFromSearchProfile').show();
+                                                                    $('#searchLoader').hide();
+                                                                }, 999)
+                                                            }
+                                                        }else{
+                                                            // Something went wrong, twice.
+                                                            // What should we do?
+                                                            console.log(`Server is not responding. ${methods[index]}`)
+                                                            $('.toastMessage').html(`"${searchInput}" is not a: ${methods[index]}`)
+                                                            toastbox('toast-danger', 2999)
+                                                            if(index >= methods.length-1){
+                                                                console.log('Request Completed')
+                                                                setTimeout(()=>{
+                                                                    $('#searchProfileBtn, #goBackFromSearchProfile').show();
+                                                                    $('#searchLoader').hide();
+                                                                }, 999)
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }, 999)
+
+                                        }
+                                    }
+                            });
+                            
+                        }, 5999*index)
+                })
+
+                        
+                }, 2999)
+                
+            }
+            
+            return true;
+        }
+
         async function navigateToDashboardSection(event){
             event.preventDefault();
             $('#sectionProfile').hide();
@@ -465,9 +607,9 @@
 
         async function navigateToProfileSection(event){
             event.preventDefault();
+            $('#newHandle, #searchInput').val("")
             $('#sectionProfile').show();
-            $('#sectionNewProfile').hide();
-            $('#sectionSelectProfile').hide();
+            $('#sectionSelectProfile, #sectionNewProfile, #sectionSearchProfile').hide();
             window.scrollTo(0, 0);
             return true;
         }
@@ -539,17 +681,46 @@
             return false;
         }
 
+        async function navigateToSearchSection(event){
+            event.preventDefault()
+            $('.loader-wrap').fadeIn('slow');
+            setTimeout(()=>{
+                window.scrollTo(0, 0);
+                $('#sectionProfile').hide();
+                $('#sectionSearchProfile').show();
+                $('.loader-wrap').fadeOut('slow');
+            }, 999)
+            return false;
+        }
+
+        async function confirmFollowSubmit(event){
+            event.preventDefault()
+            $('#previewProfileModal').modal('hide');
+            $('.loader-wrap').fadeIn('slow');
+            var followID = $('#followID').val();
+            // Follow by ID.
+            console.log(followID)
+            return false;
+        }
+
         document.getElementById("btn-login").onclick = login;
         document.getElementById("btn-logout").onclick = logOut;
         document.getElementById("launch").onclick = launchDapp;
         // document.getElementById("getProfiles").onclick = getProfiles;
         document.getElementById("lensProfile").onclick = lensProfileSection;
         document.getElementById("newProfile").onclick = newProfileSection;
-        document.getElementById("createProfileBtn").onclick = createProfileSubmit;
+        
         document.getElementById("goBack2Dashboard").onclick = navigateToDashboardSection;
         document.getElementById("goBackFromNewProfile").onclick = navigateToProfileSection;
         document.getElementById("goBackFromSelectProfile").onclick = navigateToProfileSection;
         document.getElementById("selectProfile").onclick = selectProfileSection;
+        document.getElementById("searchLENS").onclick = navigateToSearchSection;
+        
+        document.getElementById("createProfileBtn").onclick = createProfileSubmit;
+        document.getElementById("searchProfileBtn").onclick = searchProfileSubmit;
+
+        document.getElementById("confirmFollow").onclick = confirmFollowSubmit;
+        
 
         document.getElementById("exit").onclick = exitDapp;
 
