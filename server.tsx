@@ -2,12 +2,83 @@ const Fastify = require("fastify");
 const fastify = Fastify();
 const { v4: uuidv4 } = require('uuid');
 const { exec } = require('child_process');
+const LitJsSdk = require('lit-js-sdk')
 
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
 const envFilePath = path.resolve(__dirname, ".env");
+
+const axios = require("axios");
+
+const apiInstance = axios.create({
+  baseURL: "https://livepeer.com/api",
+  timeout: 10000,
+});
+
+const createStream = async (apiKey) => {
+  return apiInstance.post(
+    "/stream",
+    {
+      name: "0xrig_stream",
+      profiles: [
+        {
+          name: "720p",
+          bitrate: 2000000,
+          fps: 30,
+          width: 1280,
+          height: 720,
+        },
+        {
+          name: "480p",
+          bitrate: 1000000,
+          fps: 30,
+          width: 854,
+          height: 480,
+        },
+        {
+          name: "360p",
+          bitrate: 500000,
+          fps: 30,
+          width: 640,
+          height: 360,
+        },
+      ],
+    },
+    {
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${apiKey}`,
+      },
+    }
+  );
+};
+
+const getStreams = async (
+    apiKey,
+    active
+  ) => {
+    return apiInstance.get(`/stream?streamsonly=1&filters=[{"id":"isActive","value":${(+!!active)?'true':'false'}}]`, {
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${apiKey}`,
+      },
+    });
+  };
+
+const getStreamStatus = async (
+  apiKey,
+  streamId
+) => {
+    console.log(apiKey, streamId)
+  return apiInstance.get(`/stream/${streamId}`, {
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+  });
+};
 
 // read .env file & convert to array
 const readEnvVars = () => fs.readFileSync(envFilePath, "utf-8").split(os.EOL);
@@ -71,6 +142,25 @@ fastify.post('/', async function(req, reply){
         data: req.body,
         userAgent: req.headers["user-agent"]
     })
+})
+
+fastify.get('/verify', async function(req, reply){
+    var jwt = req.query.jwt
+    const { verified, header, payload } = LitJsSdk.verifyJwt({ jwt })
+    if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+        reply.send(`${req.query.callback}(${JSON.stringify({
+            type: "GET",
+            callback: req.query.callback,
+            data: { verified, header, payload },
+            userAgent: req.headers["user-agent"]
+        })})`);
+    }else{
+        reply.send({
+            type: "GET",
+            data: { verified, header, payload },
+            userAgent: req.headers["user-agent"]
+        });
+    }
 })
 
 fastify.get('/account', async function(req, reply){
@@ -548,6 +638,425 @@ fastify.get('/getProfile', async function(req, reply){
         console.log('Child process exited with exit code ' + code);
       });
       /** */
+    
+})
+
+fastify.get('/follow', async function(req, reply){
+    
+    if(req.query.id !== undefined && req.query.id !== 'undefined'){
+        setEnvValue('W', req.query.id)
+        /** */
+    const ls = exec('npm run 0xrig:follow-profile', function (error, stdout, stderr) {
+        if (error) {
+          console.log(error.stack);
+          console.log('Error code: ' + error.code);
+          console.log('Signal received: ' + error.signal);
+        }
+        console.log('Child Process STDOUT: ' + stdout);
+        console.log('Child Process STDERR: ' + stderr);
+
+        var lines = stdout.split("\n")
+        var aux = []
+        var flag = false
+        lines.map((line)=>{
+            console.log(line)
+            if(line !== ''){
+                if(+!!flag){
+                    // aux.push( (isJson(line)) ? JSON.parse(line) : line )
+                    aux = (isJson(line)) ? JSON.parse(line) : line ;
+                    if(isJson(line)){
+                        aux.results = true
+                    }
+                }
+                if(line == '0xRig:result'){
+                    flag = true;
+                }
+            }
+        })
+        if(aux.length <= 0){
+            aux = {results:false}
+        }
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            });
+        }
+      });
+      // setEnvValue('W', JSON.stringify({empty:true}))
+      ls.on('exit', function (code) {
+        console.log('Child process exited with exit code ' + code);
+      });
+      /** */
+    }else{
+        // Error Return.
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: false,
+                error: 'Mising Profile ID',
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: false,
+                error: 'Mising Profile ID',
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    }
+    
+})
+
+fastify.get('/following', async function(req, reply){
+    if(req.query.limit !== undefined && req.query.limit !== 'undefined' && req.query.limit >= 1){
+        setEnvValue('W', req.query.limit)
+    }else{
+        setEnvValue('W', 10)
+    }
+    /** */
+    const ls = exec('npm run 0xrig:following', function (error, stdout, stderr) {
+        if (error) {
+          console.log(error.stack);
+          console.log('Error code: ' + error.code);
+          console.log('Signal received: ' + error.signal);
+        }
+        console.log('Child Process STDOUT: ' + stdout);
+        console.log('Child Process STDERR: ' + stderr);
+
+        var lines = stdout.split("\n")
+        var aux = []
+        var flag = false
+        lines.map((line)=>{
+            console.log(line)
+            if(line !== ''){
+                if(+!!flag){
+                    // aux.push( (isJson(line)) ? JSON.parse(line) : line )
+                    aux = (isJson(line)) ? JSON.parse(line) : line ;
+                    if(isJson(line)){
+                        aux.results = true
+                    }
+                }
+                if(line == '0xRig:result'){
+                    flag = true;
+                }
+            }
+        })
+        if(aux.length <= 0){
+            aux = {results:false}
+        }
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    });
+    // setEnvValue('W', JSON.stringify({empty:true}))
+    ls.on('exit', function (code) {
+    console.log('Child process exited with exit code ' + code);
+    });
+    /** */
+    
+})
+
+fastify.get('/followers', async function(req, reply){
+    if(req.query.limit !== undefined && req.query.limit !== 'undefined' && req.query.limit >= 1){
+        setEnvValue('W', req.query.limit)
+    }else{
+        setEnvValue('W', 10)
+    }
+    /** */
+    const ls = exec('npm run 0xrig:followers', function (error, stdout, stderr) {
+        if (error) {
+          console.log(error.stack);
+          console.log('Error code: ' + error.code);
+          console.log('Signal received: ' + error.signal);
+        }
+        console.log('Child Process STDOUT: ' + stdout);
+        console.log('Child Process STDERR: ' + stderr);
+
+        var lines = stdout.split("\n")
+        var aux = []
+        var flag = false
+        lines.map((line)=>{
+            console.log(line)
+            if(line !== ''){
+                if(+!!flag){
+                    // aux.push( (isJson(line)) ? JSON.parse(line) : line )
+                    aux = (isJson(line)) ? JSON.parse(line) : line ;
+                    if(isJson(line)){
+                        aux.results = true
+                    }
+                }
+                if(line == '0xRig:result'){
+                    flag = true;
+                }
+            }
+        })
+        if(aux.length <= 0){
+            aux = {results:false}
+        }
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: aux,
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    });
+    // setEnvValue('W', JSON.stringify({empty:true}))
+    ls.on('exit', function (code) {
+    console.log('Child process exited with exit code ' + code);
+    });
+    /** */
+    
+})
+
+fastify.get('/stream', async function(req, reply){
+    if(req.query.id !== undefined && req.query.id !== 'undefined'){
+        if(req.query.id !== 'new'){
+            // Find Stream Info
+            var liveAPI = getEnvValue('LIVE_PEER_API_KEY');
+            var stream = await getStreamStatus(liveAPI, req.query.id)
+            if(stream !== false){
+                if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                    reply.send(`${req.query.callback}(${JSON.stringify({
+                        type: "GET",
+                        callback: req.query.callback,
+                        data: stream.data,
+                        results: true,
+                        userAgent: req.headers["user-agent"]
+                    })})`);
+                }else{
+                    reply.send({
+                        type: "GET",
+                        data: stream.data,
+                        results: true,
+                        userAgent: req.headers["user-agent"]
+                    });
+                }
+            }else{
+                if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                    reply.send(`${req.query.callback}(${JSON.stringify({
+                        type: "GET",
+                        callback: req.query.callback,
+                        data: false,
+                        results: false,
+                        userAgent: req.headers["user-agent"]
+                    })})`);
+                }else{
+                    reply.send({
+                        type: "GET",
+                        data: false,
+                        results: false,
+                        userAgent: req.headers["user-agent"]
+                    });
+                }
+            }
+        }else{
+            // Create Stream.
+            var liveAPI = getEnvValue('LIVE_PEER_API_KEY')
+            var stream = await createStream(liveAPI)
+            if(stream !== false){
+                if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                    reply.send(`${req.query.callback}(${JSON.stringify({
+                        type: "GET",
+                        callback: req.query.callback,
+                        data: stream.data,
+                        results: true,
+                        userAgent: req.headers["user-agent"]
+                    })})`);
+                }else{
+                    reply.send({
+                        type: "GET",
+                        data: stream.data,
+                        results: true,
+                        userAgent: req.headers["user-agent"]
+                    });
+                }
+            }else{
+                if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                    reply.send(`${req.query.callback}(${JSON.stringify({
+                        type: "GET",
+                        callback: req.query.callback,
+                        data: false,
+                        results: false,
+                        userAgent: req.headers["user-agent"]
+                    })})`);
+                }else{
+                    reply.send({
+                        type: "GET",
+                        data: false,
+                        results: false,
+                        userAgent: req.headers["user-agent"]
+                    });
+                }
+            }
+        }
+    }else{
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: false,
+                results: false,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: false,
+                results: false,
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    }
+    
+})
+
+fastify.get('/streams', async function(req, reply){
+    if(req.query.status !== undefined && req.query.status !== 'undefined'){
+        var liveAPI = getEnvValue('LIVE_PEER_API_KEY');
+        var status = req.query.status == 'active' ? true : false;
+        var stream = await getStreams(liveAPI, status)
+        if(stream !== false){
+            if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                reply.send(`${req.query.callback}(${JSON.stringify({
+                    type: "GET",
+                    callback: req.query.callback,
+                    data: stream.data,
+                    results: true,
+                    userAgent: req.headers["user-agent"]
+                })})`);
+            }else{
+                reply.send({
+                    type: "GET",
+                    data: stream.data,
+                    results: true,
+                    userAgent: req.headers["user-agent"]
+                });
+            }
+        }else{
+            if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+                reply.send(`${req.query.callback}(${JSON.stringify({
+                    type: "GET",
+                    callback: req.query.callback,
+                    data: false,
+                    results: false,
+                    userAgent: req.headers["user-agent"]
+                })})`);
+            }else{
+                reply.send({
+                    type: "GET",
+                    data: false,
+                    results: false,
+                    userAgent: req.headers["user-agent"]
+                });
+            }
+        }
+    }else{
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: false,
+                results: false,
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: false,
+                results: false,
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    }
+}
+)
+
+fastify.get('/livepeer', async function(req, reply){
+    
+    const lpApiKey = getEnvValue('LIVE_PEER_API_KEY');
+    if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+        reply.send(`${req.query.callback}(${JSON.stringify({
+            type: "GET",
+            callback: req.query.callback,
+            data: {results: (lpApiKey !== 'LIVE_PEER') ? true : false },
+            userAgent: req.headers["user-agent"]
+        })})`);
+    }else{
+        reply.send({
+            type: "GET",
+            data: {results: (lpApiKey !== 'LIVE_PEER') ? true : false },
+            userAgent: req.headers["user-agent"]
+        });
+    }
+    
+})
+
+fastify.get('/livepeerSetup', async function(req, reply){
+    
+    if(req.query.id !== undefined && req.query.id !== 'undefined'){
+        // const lpApiKey = getEnvValue('LIVE_PEER_API_KEY');
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: {results: true},
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: {results: true},
+                userAgent: req.headers["user-agent"]
+            });
+        }
+        setEnvValue('LIVE_PEER_API_KEY', req.query.id)
+    }else{
+        // no ID set.
+        if(req.query.callback !== undefined && req.query.callback !== 'undefined'){
+            reply.send(`${req.query.callback}(${JSON.stringify({
+                type: "GET",
+                callback: req.query.callback,
+                data: {results:false, error:true, code:"Livepeer API Key is not set"},
+                userAgent: req.headers["user-agent"]
+            })})`);
+        }else{
+            reply.send({
+                type: "GET",
+                data: {results:false, error:true, code:"Livepeer API Key is not set"},
+                userAgent: req.headers["user-agent"]
+            });
+        }
+    }
     
 })
 

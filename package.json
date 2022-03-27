@@ -13,6 +13,9 @@
     "0xrig:post-registration": "env-cmd -f .env ts-node ./0xrig/post/registration",
     "0xrig:get-publications": "env-cmd -f .env ts-node ./0xrig/publications/get-posts",
     "0xrig:get-post": "env-cmd -f .env ts-node ./0xrig/publications/get-post",
+    "0xrig:follow-profile": "env-cmd -f .env ts-node ./0xrig/profile/follow --init",
+    "0xrig:following": "env-cmd -f .env ts-node ./0xrig/profile/following",
+    "0xrig:followers": "env-cmd -f .env ts-node ./0xrig/profile/followers",
     "authentication:login": "env-cmd -f .env ts-node ./api/authentication/login --init",
     "authentication:refresh": "env-cmd -f .env ts-node ./api/authentication/refresh",
     "authentication:verify": "env-cmd -f .env ts-node ./api/authentication/verify",
@@ -77,6 +80,7 @@
     "fastify-formbody": "^5.2.0",
     "graphql": "^16.3.0",
     "ipfs-http-client": "^56.0.1",
+    "lit-js-sdk": "^1.1.153",
     "omit-deep": "^0.3.0",
     "uuid": "^8.3.2"
   },

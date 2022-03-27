@@ -151,7 +151,7 @@
                         </li>
                         
                         <li class="active" style="padding: 5px 0;">
-                            <a id="myFollowers" href="#" class="item" style="border-radius: 15px;">
+                            <a id="myContactsBtn" href="#" class="item" style="border-radius: 15px;">
                                 <div class="icon-box bg-dark">
                                     <img alt="LivePeerLogo" src="img/livepeer.png" class="" style="max-width:35px;border-radius: 20px;">
                                 </div>
@@ -193,6 +193,74 @@
         
                 </div>
 
+                <div id="sectionLivePeerSetup" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>LivePeer Setup</h1>
+                        <h4>Enter your API Key here:</h4>
+                    </div>
+                    <div class="section mb-5 p-2">
+                        <form action="/">
+                            <div class="form-group basic">
+                                <input style="width:50% !important;letter-spacing:0px !important;color:#4970e1 !important" type="text" class="form-control verification-input" id="livepeerApiKeyInput" placeholder="" maxlength="99">
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <div id="lpSetupLoader" class="spinner-grow text-success" style="display:none;" role="status"></div>
+                                <button id="lpSetupBtn" type="submit" class="btn btn-primary btn-block btn-lg">Save</button>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;">
+                                <a href="/" id="goBackFromLPSetup">Maybe later</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="sectionCalling" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Waiting for Peer</h1>
+                        <h4>You can start your stream:</h4>
+                    </div>
+                    <div class="section mb-5 p-2">
+                        <form action="/">
+                            <div class="form-button-group transparent" style="position: relative;min-height: 15px !important;">
+                                <h3>Stream Key:</h3>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;min-height: 15px !important;">
+                                <h4 id="streamKey">-</h4>
+                            </div>
+                            <br/>
+                            <div class="form-button-group transparent" style="position: relative;min-height: 15px !important;">
+                                <h3>Stream URL:</h3>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;min-height: 15px !important;">
+                                <h4 id="streamUrl">rtmp://rtmp.livepeer.com/live</h4>
+                            </div>
+                            <br/>
+                            <div class="form-button-group transparent" style="position: relative;min-height: 15px !important;">
+                                <div id="streamLoader" class="spinner-grow text-success" style="display:none;" role="status"></div>
+                                <button id="streamLaunchBtn" type="submit" class="btn btn-primary btn-block btn-lg">Start Stream</button>
+                            </div>
+                            <div class="form-button-group transparent" style="position: relative;min-height: 25px !important;">
+                                <a href="/" id="goBackFromCalling">Hang Up</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="sectionContacts" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Select a Contact</h1>
+                        <h4 id="contactsText">-</h4>
+                        <a href="/" id="goBackFromContacts">Back to Dashboard</a>
+                    </div>
+                    <div class="section mb-2 p-2">
+                        <div class="form-group basic">
+                            <ul id="contactsUL" class="listview image-listview flush">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="sectionSelectProfile" class="section full" style="display: none;">
                     <div class="section mt-2 text-center">
                         <h1>Choose a Profile</h1>
@@ -211,6 +279,36 @@
                     </div>
                 </div>
                 
+                <div id="sectionFollowing" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Following</h1>
+                        <h4 id="followingText">-</h4>
+                        <a href="/" id="goBackFromFollowing">Back to LENS Module</a>
+                    </div>
+                    <div class="section mb-2 p-2">
+                        <div class="form-group basic">
+                            <ul id="followingProfileUL" class="listview image-listview flush">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sectionFollowers" class="section full" style="display: none;">
+                    <div class="section mt-2 text-center">
+                        <h1>Followers</h1>
+                        <h4 id="followersText">-</h4>
+                        <a href="/" id="goBackFromFollowers">Back to LENS Module</a>
+                    </div>
+                    <div class="section mb-2 p-2">
+                        <div class="form-group basic">
+                            <ul id="followersProfileUL" class="listview image-listview flush">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="sectionSearchProfile" class="section full" style="display: none;">
                     <div class="section mt-2 text-center">
                         <h1>Search on LENS</h1>
@@ -416,6 +514,31 @@
 
 </main>
 
+<div class="modal fade dialogbox show" id="callProfileModal" data-backdrop="static" tabindex="-1" role="dialog" aria-modal="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="pt-3 text-center">
+                <img id="callModalImage" class="imaged w64 rounded mb-1" alt="image" src="https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256">
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title callModalName">
+                    -
+                </h5>
+            </div>
+            <div class="modal-body callModalText" style="color:#958d9e;">
+                -
+            </div>
+            <div class="modal-footer">
+                <div class="btn-inline">
+                    <a href="#" class="btn btn-text-secondary" data-dismiss="modal">CANCEL</a>
+                    <a href="#" id="confirmCallBtn" class="btn btn-text-primary">CALL</a>
+                    <input type="hidden" value="0" id="callID"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade dialogbox show" id="previewProfileModal" data-backdrop="static" tabindex="-1" role="dialog" aria-modal="true" style="display: none;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -476,6 +599,7 @@
         </div>
     </div>
 </div>
+<script onload='LitJsSdk.litJsSdkLoadedInALIT()' src="https://jscdn.litgateway.com/index.web.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/moralis@1.5.5/dist/moralis.js"></script>
 <script src="js/moralisKeys.js"></script>

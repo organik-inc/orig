@@ -3,9 +3,102 @@
     // This Address is only for Polygon's Mumbai Testnet.
     var walletAddress = '';
     var chainNetwork = false;
+    var encodeKey = false;
     var lensAddress = '';
     var lensProfile = '';
     var selectedProfile = {empty:true}
+
+    /**
+     * LIT PROTOCOL
+     */
+
+     async function mintNft() {
+        document.getElementById('mintingStatus').innerText = "Minting, please wait for the tx to confirm..."
+  
+        window.chain = 'mumbai'
+  
+        const {
+          txHash,
+          tokenId,
+          tokenAddress,
+          mintingAddress,
+          authSig
+        } = await LitJsSdk.mintLIT({ chain: window.chain, quantity: 1 })
+        window.tokenId = tokenId
+        window.tokenAddress = tokenAddress
+        window.authSig = authSig
+  
+        document.getElementById('mintingStatus').innerText = "Minted!  Tx hash is " + txHash
+      }
+  
+      async function provisionAccess() {
+        document.getElementById('provisioningStatus').innerText = "Provisioning, please wait..."
+        window.accessControlConditions = [
+          {
+            contractAddress: LitJsSdk.LIT_CHAINS[window.chain].contractAddress,
+            standardContractType: 'ERC1155',
+            chain: window.chain,
+            method: 'balanceOf',
+            parameters: [
+              ':userAddress',
+              window.tokenId.toString()
+            ],
+            returnValueTest: {
+              comparator: '>',
+              value: '0'
+            }
+          }
+        ]
+        // generate a random path because you can only provision access to a given path once
+        const randomUrlPath = "/" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        window.resourceId = {
+          baseUrl: '0xrig.com',
+          path: `${randomUrlPath}/${encodeKey}`, // this would normally be your url path, like "/webpage.html" for example
+          orgId: "0xrig",
+          role: "",
+          extraData: ""
+        }
+        await litNodeClient.saveSigningCondition({
+          accessControlConditions: window.accessControlConditions,
+          chain: window.chain,
+          authSig: window.authSig,
+          resourceId: window.resourceId
+        })
+        document.getElementById('provisioningStatus').innerText = "Provisioned!"
+      }
+  
+      async function requestJwt() {
+        document.getElementById('requestingStatus').innerText = "Requesting JWT, please wait..."
+  
+        window.jwt = await litNodeClient.getSignedToken({
+          accessControlConditions: window.accessControlConditions,
+          chain: window.chain,
+          authSig: window.authSig,
+          resourceId: window.resourceId
+        })
+  
+        document.getElementById('requestingStatus').innerText = "JWT Obtained!  It is  " + window.jwt
+  
+      }
+  
+      async function verifyJwt(jwt=string) {
+        // Override for Server Call.
+        console.log('API:LIT Verify JWT:', jwt)
+        /** */
+        var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/verify?jwt=${jwt}`
+        $.ajax({
+                url: url,
+                dataType: 'jsonp',
+                success: function(jwtObject){
+                    if(+!!jwtObject.data.verified){
+                        console.log(jwtObject.data)
+                    }else{
+                        // Not verified.
+                    }
+                }
+        });
+        /** */
+      }
 
     const isHex = (inputString = string) =>{
         var re = /[0-9A-Fa-f]{2}/g;
@@ -54,6 +147,80 @@
         return false;
     }
 
+    const updateContactsList = (profiles=object) => {
+        console.log('Updating contacts list',profiles);
+        var list = document.querySelector("#contactsUL");
+        profiles.map((item)=>{
+            var liContent = `<a id="select-${item.wallet.defaultProfile.id}" href="#" class="item" style="border-radius: 15px;" onclick="confirmCall(event, {id:'${item.wallet.defaultProfile.id}',avatar:'${ (item.wallet.defaultProfile.picture !== null && item.wallet.defaultProfile.picture !== 'null') ? item.wallet.defaultProfile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}',name:'${item.wallet.defaultProfile.name}',handle:'${item.wallet.defaultProfile.handle}' } )">
+            <div class="icon-box bg-primary">
+                <img alt="LENSLogo" src="${ (item.wallet.defaultProfile.picture !== null && item.wallet.defaultProfile.picture !== 'null') ? item.wallet.defaultProfile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
+            </div>
+            <div class="in">
+                <div>
+                    <div class="mb-05"><strong>@${item.wallet.defaultProfile.handle} (${item.wallet.defaultProfile.id})</strong></div>
+                    <div class="mb-05"><small>${item.wallet.defaultProfile.stats.totalFollowers} Followers</small></div>
+                    <div class="mb-06"><small>${item.wallet.defaultProfile.stats.totalFollowing} Following</small></div>
+                </div>
+            </div>
+        </a>`
+            var entry = document.createElement("li");
+            entry.className = 'active'
+            entry.setAttribute("style", `padding: 5px 0;`);
+            entry.insertAdjacentHTML("beforeend", `${liContent}`);
+            list.appendChild(entry);
+        })
+    }
+
+    const updateFollowersList = (profiles=object) => {
+        console.log('Updating followers list',profiles);
+        $('#followersText').html(`You have ${profiles.length} follower${profiles.length == 1 ? '':'s'}`)
+        var list = document.querySelector("#followersProfileUL");
+        profiles.map((item)=>{
+            var liContent = `<a id="select-${item.wallet.defaultProfile.id}" href="#" class="item" style="border-radius: 15px;">
+            <div class="icon-box bg-primary">
+                <img alt="LENSLogo" src="${ (item.wallet.defaultProfile.picture !== null && item.wallet.defaultProfile.picture !== 'null') ? item.wallet.defaultProfile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
+            </div>
+            <div class="in">
+                <div>
+                    <div class="mb-05"><strong>@${item.wallet.defaultProfile.handle} (${item.wallet.defaultProfile.id})</strong></div>
+                    <div class="mb-05"><small>${item.wallet.defaultProfile.stats.totalFollowers} Followers</small></div>
+                    <div class="mb-06"><small>${item.wallet.defaultProfile.stats.totalFollowing} Following</small></div>
+                </div>
+            </div>
+        </a>`
+            var entry = document.createElement("li");
+            entry.className = 'active'
+            entry.setAttribute("style", `padding: 5px 0;`);
+            entry.insertAdjacentHTML("beforeend", `${liContent}`);
+            list.appendChild(entry);
+        })
+    }
+
+    const updateFollowingList = (profiles=object) => {
+        console.log('Updating following list',profiles);
+        $('#followingText').html(`You are following ${profiles.length} profile${profiles.length == 1 ? '':'s'}`)
+        var list = document.querySelector("#followingProfileUL");
+        profiles.map((item)=>{
+            var liContent = `<a id="select-${item.profile.id}" href="#" class="item" style="border-radius: 15px;">
+            <div class="icon-box bg-primary">
+                <img alt="LENSLogo" src="${ (item.profile.picture !== null && item.profile.picture !== 'null') ? item.profile.picture.original.url : 'https://cdn.discordapp.com/icons/918178320682733648/a_44df9d063ee147ada29f7a18536ce029.webp?size=256'}" class="" style="max-width:35px;border-radius: 20px;">
+            </div>
+            <div class="in">
+                <div>
+                    <div class="mb-05"><strong>@${item.profile.handle} (${item.profile.id})</strong></div>
+                    <div class="mb-05"><small>${item.profile.stats.totalFollowers} Followers</small></div>
+                    <div class="mb-06"><small>${item.profile.stats.totalFollowing} Following</small></div>
+                </div>
+            </div>
+        </a>`
+            var entry = document.createElement("li");
+            entry.className = 'active'
+            entry.setAttribute("style", `padding: 5px 0;`);
+            entry.insertAdjacentHTML("beforeend", `${liContent}`);
+            list.appendChild(entry);
+        })
+    }
+
     const updateSearchProfiles = (profiles=object, method=string) => {
         console.log('Updating profiles list',profiles);
         var list = document.querySelector("#searchProfileUL");
@@ -65,7 +232,7 @@
             <div class="in">
                 <div>
                     <div class="mb-05"><strong>@${profile.handle} (${profile.id})</strong></div>
-                    <div class="mb-05"><small>Matched as ${decodeMethod(method)}</small></div>
+                    <div class="mb-05"><small>Matched by ${decodeMethod(method)}</small></div>
                     <div class="mb-05"><small>${profile.stats.totalFollowers} Followers</small></div>
                     <div class="mb-06"><small>${profile.stats.totalFollowing} Following</small></div>
                 </div>
@@ -99,6 +266,31 @@
             entry.insertAdjacentHTML("beforeend", `${liContent}`);
             list.appendChild(entry);
         })
+    }
+
+    const launchStream = (event) => {
+        event.preventDefault()
+        console.log('Opening Stream on a new Tab.')
+        $('.loader-wrap').fadeIn('slow');
+        const streamKey = $('#streamKey').html()
+        setTimeout(()=>{
+            $('.loader-wrap').fadeOut('slow');
+            window.open(`https://justcast.it/to/${streamKey}`, '_blank');
+        }, 1999)
+        
+
+        return false
+    }
+
+    const confirmCall = (event, profile = object) => {
+        event.preventDefault()
+        console.log('Calling profile:', profile.id)
+        $('#callID').val(profile.id);
+        $('#callModalImage').attr("src", profile.avatar);
+        $('.callModalName').html(`${profile.id} - @${profile.handle}`);
+        $('.callModalText').html(`Do you want to start a call with ${ (profile.name !== null && profile.name !== 'null') ? profile.name : profile.handle }?`);
+        $('#callProfileModal').modal('show');
+        return false
     }
 
     const previewProfile = (event, profile = object) => {
@@ -495,13 +687,46 @@
             return false;
         }
 
+        async function livepeerSetupSubmit(event){
+            event.preventDefault();
+            $('#lpSetupLoader').show();
+            $('#lpSetupBtn, #goBackFromLPSetup').hide();
+            var livepeerInput = $('#livepeerApiKeyInput').val();
+            if(searchInput !== ''){
+                const methods = isHex(searchInput) ? ['owner','id','handle'] : ['handle'];
+                $('.toastMessage').html(`Setting up livepeer for streaming.`)
+                toastbox('toast-success', 3999)
+                console.log(`API LivePeer Setup`);
+                var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/livepeerSetup?id=${livepeerInput}`
+                $.ajax({
+                        url: url,
+                        dataType: 'jsonp',
+                        success: function(results){
+                            console.log(results)
+                            if(+!!results.data.results){
+                                // Everything is OK.
+                                $('#lpSetupBtn, #goBackFromLPSetup').show();
+                                $('#lpSetupLoader').hide();
+                                navigateToContactsSection(event)
+                            }else{
+                                // Try Again. API sometimes glitches.
+                                console.log('Error setting up LivePeer APIKey ...')
+                            }
+                        }
+                });
+                
+            }
+            
+            return true;
+        }
+        
         async function searchProfileSubmit(event){
             event.preventDefault();
             $('#searchLoader').show();
             $('#searchProfileBtn, #goBackFromSearchProfile').hide();
             var searchInput = cleanHandle($('#searchInput').val());
             if(searchInput !== ''){
-                const methods = isHex(searchInput) ? ['handle','owner','id'] : ['handle'];
+                const methods = isHex(searchInput) ? ['owner','id','handle'] : ['handle'];
                 if(isHex(searchInput)){
                     $('.toastMessage').html(`Performing a wide search. This could take a moment. "${searchInput}"`)
                     toastbox('toast-success', 3999)
@@ -597,9 +822,90 @@
             return true;
         }
 
+        async function navigateToContactsSection(event){
+            event.preventDefault();
+            window.scrollTo(0, 0);
+            $('.loader-wrap').fadeIn('slow');
+            console.log(`API: Call LivePeer Check:`)
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/livepeer`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(livepeer){
+                        console.log(livepeer)
+                        if(+!!livepeer.data.results){
+                            // 
+                            console.log('LivePeer API KEY is enabled.')
+                            console.log(`API: Call followers: ${lensProfile}`)
+                            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/followers?limit=50`
+                            $.ajax({
+                                    url: url,
+                                    dataType: 'jsonp',
+                                    success: function(follow){
+                                        console.log(follow)
+                                        if(+!!follow.data.results){
+                                            // 
+                                            $('.loader-wrap').fadeOut('slow');
+                                            $('#contactsText').html(`${follow.data.data.followers.pageInfo.totalCount} contacts`)
+                                            $('.toastMessage').html(`You have ${follow.data.data.followers.pageInfo.totalCount} contacts.`)
+                                            toastbox('toast-success', 3999)
+                                            $('#sectionDashboard, #sectionLivePeerSetup').hide();
+                                            $('#sectionContacts').show();
+                                            updateContactsList(follow.data.data.followers.items)
+                                        }else{
+                                            // Try Again. API sometimes glitches.
+                                            console.log('API timeout, retrying in 2 seconds ...')
+                                            setTimeout(()=>{
+                                                $.ajax({
+                                                    url: url,
+                                                    dataType: 'jsonp',
+                                                    success: function(follow){
+                                                        console.log(follow)
+                                                        if(+!!follow.data.results){
+                                                            // 
+                                                            $('.loader-wrap').fadeOut('slow');
+                                                            $('#contactsText').html(`${follow.data.data.followers.pageInfo.totalCount} contacts`)
+                                                            $('.toastMessage').html(`You have ${follow.data.data.followers.pageInfo.totalCount} contacts.`)
+                                                            toastbox('toast-success', 3999)
+                                                            $('#sectionDashboard, #sectionLivePeerSetup').hide();
+                                                            $('#sectionContacts').show();
+                                                            updateContactsList(follow.data.data.followers.items)
+                                                        }else{
+                                                            // Something went wrong, twice.
+                                                            // What should we do?
+                                                            $('.loader-wrap').fadeOut('slow');
+                                                            $('#sectionDashboard').show();
+                                                            $('#sectionLivePeerSetup').hide();
+                                                            console.log('Server is not responding.')
+                                                            $('.toastMessage').html("LENS API error. Try again.")
+                                                            toastbox('toast-danger', 1999)
+                                                        }
+                                                    }
+                                                });
+                                            }, 999)
+
+                                        }
+                                    }
+                            });
+                        }else{
+                            // LivePeer not Set.
+                            $('.loader-wrap').fadeOut('slow');
+                            console.log('LivePeer API KEY is not set.')
+                            $('.toastMessage').html("LivePeer API KEY is not set.")
+                            toastbox('toast-warning', 2999)
+                            $('#sectionDashboard').hide();
+                            $('#sectionLivePeerSetup').show();
+                            // Show LivePeer Setup Page.
+                        }
+                    }
+            });
+
+            return true;
+        }
+
         async function navigateToDashboardSection(event){
             event.preventDefault();
-            $('#sectionProfile').hide();
+            $('#sectionProfile, #sectionContacts, #sectionCalling').hide();
             $('#sectionDashboard').show();
             window.scrollTo(0, 0);
             return true;
@@ -609,7 +915,7 @@
             event.preventDefault();
             $('#newHandle, #searchInput').val("")
             $('#sectionProfile').show();
-            $('#sectionSelectProfile, #sectionNewProfile, #sectionSearchProfile').hide();
+            $('#sectionSelectProfile, #sectionNewProfile, #sectionSearchProfile, #sectionFollowing, #sectionFollowers').hide();
             window.scrollTo(0, 0);
             return true;
         }
@@ -681,6 +987,112 @@
             return false;
         }
 
+        async function navigateToFollowingSection(event){
+            event.preventDefault()
+            $('.loader-wrap').fadeIn('slow');
+            console.log(`API: Call following: ${lensProfile}`)
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/following?limit=50`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(follow){
+                        console.log(follow)
+                        if(+!!follow.data.results){
+                            // 
+                            $('.loader-wrap').fadeOut('slow');
+                            $('.toastMessage').html(`You are following ${follow.data.data.following.pageInfo.totalCount} profiles.`)
+                            toastbox('toast-success', 3999)
+                            $('#sectionProfile').hide();
+                            $('#sectionFollowing').show();
+                            updateFollowingList(follow.data.data.following.items)
+                        }else{
+                            // Try Again. API sometimes glitches.
+                            console.log('API timeout, retrying in 2 seconds ...')
+                            setTimeout(()=>{
+                                $.ajax({
+                                    url: url,
+                                    dataType: 'jsonp',
+                                    success: function(follow){
+                                        console.log(follow)
+                                        if(+!!follow.data.results){
+                                            // 
+                                            $('.loader-wrap').fadeOut('slow');
+                                            $('.toastMessage').html(`You are following ${follow.data.data.following.pageInfo.totalCount} profiles.`)
+                                            toastbox('toast-success', 3999)
+                                            updateFollowingList(follow.data.data.following.items)
+                                            $('#sectionProfile').hide();
+                                            $('#sectionFollowing').show();
+                                        }else{
+                                            // Something went wrong, twice.
+                                            // What should we do?
+                                            $('.loader-wrap').fadeOut('slow');
+                                            console.log('Server is not responding.')
+                                            $('.toastMessage').html("LENS API error. Try again.")
+                                            toastbox('toast-danger', 1999)
+                                        }
+                                    }
+                                });
+                            }, 999)
+
+                        }
+                    }
+            });
+            return false;
+        }
+
+        async function navigateToFollowersSection(event){
+            event.preventDefault()
+            $('.loader-wrap').fadeIn('slow');
+            console.log(`API: Call followers: ${lensProfile}`)
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/followers?limit=50`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(follow){
+                        console.log(follow)
+                        if(+!!follow.data.results){
+                            // 
+                            $('.loader-wrap').fadeOut('slow');
+                            $('.toastMessage').html(`You have ${follow.data.data.followers.pageInfo.totalCount} followers.`)
+                            toastbox('toast-success', 3999)
+                            $('#sectionProfile').hide();
+                            $('#sectionFollowers').show();
+                            updateFollowersList(follow.data.data.followers.items)
+                        }else{
+                            // Try Again. API sometimes glitches.
+                            console.log('API timeout, retrying in 2 seconds ...')
+                            setTimeout(()=>{
+                                $.ajax({
+                                    url: url,
+                                    dataType: 'jsonp',
+                                    success: function(follow){
+                                        console.log(follow)
+                                        if(+!!follow.data.results){
+                                            // 
+                                            $('.loader-wrap').fadeOut('slow');
+                                            $('.toastMessage').html(`You have ${follow.data.data.followers.pageInfo.totalCount} followers.`)
+                                            toastbox('toast-success', 3999)
+                                            updateFollowersList(follow.data.data.followers.items)
+                                            $('#sectionProfile').hide();
+                                            $('#sectionFollowers').show();
+                                        }else{
+                                            // Something went wrong, twice.
+                                            // What should we do?
+                                            $('.loader-wrap').fadeOut('slow');
+                                            console.log('Server is not responding.')
+                                            $('.toastMessage').html("LENS API error. Try again.")
+                                            toastbox('toast-danger', 1999)
+                                        }
+                                    }
+                                });
+                            }, 999)
+
+                        }
+                    }
+            });
+            return false;
+        }
+
         async function navigateToSearchSection(event){
             event.preventDefault()
             $('.loader-wrap').fadeIn('slow');
@@ -693,13 +1105,91 @@
             return false;
         }
 
+        async function confirmCallSubmit(event){
+            event.preventDefault()
+            $('#callProfileModal').modal('hide');
+            $('.loader-wrap').fadeIn('slow');
+            var callID = $('#callID').val();
+            // Follow by ID.
+            console.log(`API: Call profile: ${callID}`)
+            // Read 0xRig Posts from User Profile.
+            // Start a Stream.
+            // Encode with LIT. (MINT)
+            // Generate JWT.
+            // Post JWT into User Profile.
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/stream?id=new`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(stream){
+                        console.log(stream)
+                        if(+!!stream.results){
+                            // 
+                            $('.loader-wrap').fadeOut('slow');
+                            // Hide Contacts
+                            $('#streamKey').html(stream.data.streamKey)
+                            $('#sectionContacts').hide();
+                            $('#sectionCalling').show();
+                            $('.toastMessage').html("Stream Key Created!")
+                            toastbox('toast-success', 2999)
+                            // Show Calling Card.
+                        }else{
+                            // Try Again. API sometimes glitches.
+                            console.log('API timeout, retrying in 2 seconds ...')
+                            $('.loader-wrap').fadeOut('slow');
+                        }
+                    }
+            });
+            return false;
+        }
+
         async function confirmFollowSubmit(event){
             event.preventDefault()
             $('#previewProfileModal').modal('hide');
             $('.loader-wrap').fadeIn('slow');
             var followID = $('#followID').val();
             // Follow by ID.
-            console.log(followID)
+            console.log(`API: Call follow profile: ${followID}`)
+            var url = `${window.location.href.split("gitpod.io").shift().replace("https://8000","https://3000")}gitpod.io/follow?id=${followID}`
+            $.ajax({
+                    url: url,
+                    dataType: 'jsonp',
+                    success: function(follow){
+                        console.log(follow)
+                        if(+!!follow.data.results){
+                            // 
+                            $('.loader-wrap').fadeOut('slow');
+                            $('.toastMessage').html(`You have sent a Follow Request to ${followID}`)
+                            toastbox('toast-success', 3999)
+                        }else{
+                            // Try Again. API sometimes glitches.
+                            console.log('API timeout, retrying in 2 seconds ...')
+                            setTimeout(()=>{
+                                $.ajax({
+                                    url: url,
+                                    dataType: 'jsonp',
+                                    success: function(follow){
+                                        console.log(follow)
+                                        if(+!!follow.data.results){
+                                            // 
+                                            $('.loader-wrap').fadeOut('slow');
+                                            $('.toastMessage').html(`You have sent a Follow Request to ${followID}`)
+                                            toastbox('toast-success', 3999)
+                                        }else{
+                                            // Something went wrong, twice.
+                                            // What should we do?
+                                            $('.loader-wrap').fadeOut('slow');
+                                            console.log('Server is not responding.')
+                                            $('.toastMessage').html("LENS API error. Try again.")
+                                            toastbox('toast-danger', 1999)
+                                        }
+                                    }
+                                });
+                            }, 999)
+
+                        }
+                    }
+            });
             return false;
         }
 
@@ -711,16 +1201,29 @@
         document.getElementById("newProfile").onclick = newProfileSection;
         
         document.getElementById("goBack2Dashboard").onclick = navigateToDashboardSection;
+        document.getElementById("goBackFromContacts").onclick = navigateToDashboardSection;
+        document.getElementById("goBackFromCalling").onclick = navigateToDashboardSection;
+        
+        document.getElementById("goBackFromSearchProfile").onclick = navigateToProfileSection;
         document.getElementById("goBackFromNewProfile").onclick = navigateToProfileSection;
         document.getElementById("goBackFromSelectProfile").onclick = navigateToProfileSection;
+        document.getElementById("goBackFromFollowing").onclick = navigateToProfileSection;
+        document.getElementById("goBackFromFollowers").onclick = navigateToProfileSection;
         document.getElementById("selectProfile").onclick = selectProfileSection;
         document.getElementById("searchLENS").onclick = navigateToSearchSection;
+        document.getElementById("following").onclick = navigateToFollowingSection;
+        document.getElementById("followers").onclick = navigateToFollowersSection;
         
         document.getElementById("createProfileBtn").onclick = createProfileSubmit;
         document.getElementById("searchProfileBtn").onclick = searchProfileSubmit;
 
+        document.getElementById("myContactsBtn").onclick = navigateToContactsSection;
+
         document.getElementById("confirmFollow").onclick = confirmFollowSubmit;
-        
+        document.getElementById("lpSetupBtn").onclick = livepeerSetupSubmit;
+        document.getElementById("confirmCallBtn").onclick = confirmCallSubmit;
+
+        document.getElementById("streamLaunchBtn").onclick = launchStream;
 
         document.getElementById("exit").onclick = exitDapp;
 
