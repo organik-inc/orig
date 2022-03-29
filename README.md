@@ -1,13 +1,28 @@
-# 0xrig
-Built for ETH Global Hackathon - LFG (LENS PROTOCOL)
+# 0xrig - A Free Crypto Phone for everyone.
+> Built for ETH Global Hackathon - LFGrow 2022.
+
+---
+### Technology:
+
+1. [Lens.dev](https://lens.dev)
+2. [LivePeer](https://livepeer.org/)
+3. [LIT Protocol](https://litprotocol.com/)
+4. [Moralis Web SDK](https://moralis.io/)
 
 ---
 
-Built to use with GitPod
+## GET STARTED : Built to use on GitPod
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/organik-inc/orig)
 
 Start with 1 click and Setup your 0xrig.
+
+### SETUP
+
+1. Copy ```.env.template``` and name it ```.env```
+2. Export your MetaMask Private Key. (Your keys will never leave your container)
+3. Run ```npm run html```
+4. Run ```npm run server```
 
 ---
 
